@@ -1,12 +1,7 @@
-import './App.css'
+import WeatherDashboard from "./pages/WeatherDashboard";
 
 function App() {
-
-  return (
-    <div className="bg-blue-500 text-white p-4 rounded-lg">
-  Hello Tailwind!
-</div>
-  )
+  return <WeatherDashboard />;
 }
 
-export default App
+export default App;
