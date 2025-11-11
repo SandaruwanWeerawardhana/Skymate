@@ -1,150 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import WeatherCard from '../components/WeatherCard';
 import SearchBar from '../components/SearchBar';
 import { Cloud } from 'lucide-react';
-
-interface City {
-  id: number;
-  city: string;
-  date: string;
-  temperature: number;
-  tempMin: number;
-  tempMax: number;
-  condition: string;
-  pressure: string;
-  humidity: string;
-  visibility: string;
-  windSpeed: string;
-  windDegree: string;
-  sunrise: string;
-  sunset: string;
-  color: string;
-}
+import type { CardWeather } from '@/services/weatherService';
+import { fetchAllWeatherFromCities, fetchWeatherByName } from '@/services/weatherService';
+type CardItem = CardWeather;
 
 export const WeatherDashboard: React.FC = () => {
-  const [cities, setCities] = useState<City[]>([
-    {
-      id: 1,
-      city: 'Colombo, LK',
-      date: '9:19am, Feb 8',
-      temperature: 27,
-      tempMin: 25,
-      tempMax: 28,
-      condition: 'Few Clouds',
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: 'blue'
-    },
-    {
-      id: 2,
-      city: 'Tokyo, JP',
-      date: '9:19am, Feb 8',
-      temperature: 7,
-      tempMin: -7,
-      tempMax: 7,
-      condition: 'Broken Clouds',
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: 'purple'
-    },
-    {
-      id: 3,
-      city: 'Liverpool, GB',
-      date: '9:19am, Feb 8',
-      temperature: -2,
-      tempMin: -2,
-      tempMax: 5,
-      condition: 'Clear Sky',
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: 'green'
-    },
-    {
-      id: 4,
-      city: 'Sydney, AU',
-      date: '9:19am, Feb 8',
-      temperature: 26,
-      tempMin: 20,
-      tempMax: 30,
-      condition: 'Light Rain',
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: 'orange'
-    },
-    {
-      id: 5,
-      city: 'Boston, US',
-      date: '9:19am, Feb 8',
-      temperature: 13,
-      tempMin: 10,
-      tempMax: 15,
-      condition: 'Mist',
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: 'red'
-    }
-  ]);
+  const [cards, setCards] = useState<CardItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddCity = (cityName: string): void => {
-    if (!cityName.trim()) return;
-
-    const colors = ['blue', 'purple', 'green', 'orange', 'red'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-    const newCity: City = {
-      id: Date.now(),
-      city: cityName,
-      date: new Date().toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-        month: 'short',
-        day: 'numeric'
-      }),
-      temperature: Math.floor(Math.random() * 30) + 5,
-      tempMin: Math.floor(Math.random() * 15),
-      tempMax: Math.floor(Math.random() * 15) + 20,
-      condition: ['Clear Sky', 'Few Clouds', 'Broken Clouds', 'Light Rain', 'Mist'][Math.floor(Math.random() * 5)],
-      pressure: '1018hPa',
-      humidity: '78%',
-      visibility: '8.0km',
-      windSpeed: '4.0m/s',
-      windDegree: '120 Degree',
-      sunrise: '6:05am',
-      sunset: '6:05am',
-      color: randomColor
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchAllWeatherFromCities();
+        setCards(data);
+      } catch (e) {
+        console.error(e);
+        setError('Failed to load weather data. Check API key.');
+      } finally {
+        setLoading(false);
+      }
     };
+    load();
+  }, []);
 
-    setCities([...cities, newCity]);
+  const handleAddCity = async (cityName: string) => {
+    if (!cityName.trim()) return;
+    try {
+      const item = await fetchWeatherByName(cityName);
+      setCards((prev) => [...prev, item]);
+    } catch (e) {
+      console.error(e);
+      setError('Could not find that city');
+    }
   };
 
-  const handleRemoveCity = (id: number): void => {
-    setCities(cities.filter(city => city.id !== id));
+  const handleRemoveCity = (id: string) => {
+    setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
@@ -174,21 +68,25 @@ export const WeatherDashboard: React.FC = () => {
         </header>
 
         {/* Weather Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {cities.map((city) => (
-            <WeatherCard
-              key={city.id}
-              {...city}
-              cityname={city.city}
-              description={city.condition}
-              onRemove={() => handleRemoveCity(city.id)}
-            />
-          ))}
-        </div>
+        {loading && <p className="text-center text-foreground">Loading...</p>}
+        {!loading && error && <p className="text-center text-red-400">{error}</p>}
+        {!loading && !error && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            {cards.map((c) => (
+              <WeatherCard
+                key={c.id}
+                cityname={c.cityname}
+                description={c.description}
+                temperature={c.temperature}
+                onRemove={() => handleRemoveCity(c.id)}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Footer */}
         <footer className="text-center text-muted-foreground text-sm pb-8">
-          <p>2021 Fidènz Technologies</p>
+          <p>2021 Fidenz Technologies</p>
         </footer>
       </div>
     </div>
