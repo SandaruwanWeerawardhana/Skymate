@@ -1,2 +1,65 @@
 @import "tailwindcss";
 
+@theme {
+    /* Weather App Color Palette - HSL Format */
+    --color-background: oklch(0.3 0.05 250);
+    --color-foreground: oklch(1 0 0);
+    
+    /* Card variants for different weather conditions */
+    --color-card-blue: oklch(0.65 0.15 240);
+    --color-card-purple: oklch(0.68 0.2 285);
+    --color-card-green: oklch(0.65 0.12 160);
+    --color-card-orange: oklch(0.7 0.15 50);
+    --color-card-red: oklch(0.62 0.18 25);
+    
+    /* UI Elements */
+    --color-card: oklch(0.28 0.04 250);
+    --color-card-foreground: oklch(1 0 0);
+    --color-card-detail: oklch(0.32 0.03 250);
+    --color-card-detail-foreground: oklch(0.9 0 0);
+    
+    --color-primary: oklch(0.68 0.2 285);
+    --color-secondary: oklch(0.32 0.03 250);
+    --color-muted: oklch(0.38 0.03 250);
+    --color-accent: oklch(0.68 0.2 285);
+    
+    --color-border: oklch(0.42 0.03 250);
+    
+    --radius: 0.75rem;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+* {
+    border-color: var(--color-border);
+}
+
+/* Custom utility classes */
+.gradient-bg {
+    background: linear-gradient(180deg, oklch(0.35 0.05 250) 0%, oklch(0.28 0.05 250) 100%);
+}
+
+.card-shadow {
+    box-shadow: 0 10px 30px -5px oklch(0.2 0.05 250 / 0.4);
+}
+
+.card-shadow-hover {
+    box-shadow: 0 15px 40px -5px oklch(0.2 0.05 250 / 0.6);
+}
+
+.smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
