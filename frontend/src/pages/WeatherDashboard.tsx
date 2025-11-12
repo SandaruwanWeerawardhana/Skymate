@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import WeatherCard from '../components/WeatherCard';
-import WeatherCardView from '../components/WeatherCardView';
+import WeatherCardView from './WeatherCardView';
 import SearchBar from '../components/SearchBar';
 import { Cloud, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
