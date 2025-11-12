@@ -1,6 +1,4 @@
 import React from "react";
-import { X } from "lucide-react";
-import { Button } from "./ui/button";
 
 interface WeatherCardProps {
   cityname: string;
@@ -10,42 +8,39 @@ interface WeatherCardProps {
   onClick?: () => void;
 }
 
-// React.memo: Memoizes the component - only re-renders when props change
-// This prevents unnecessary re-renders when parent state updates
-const WeatherCard: React.FC<WeatherCardProps> = React.memo(({
-  cityname,
-  description,
-  temperature,
-  onRemove,
-  onClick,
-}) => {
-  return (
+const WeatherCard: React.FC<WeatherCardProps> = React.memo(
+  ({ cityname, description, temperature, onClick }) => (
     <button
       type="button"
-      className="w-full rounded-xl overflow-hidden card-shadow smooth-transition hover:card-shadow-hover hover:scale-[1.02] bg-[hsl(217_20%_24%)] text-white cursor-pointer text-left border-0 p-0"
+      className="group relative z-0 w-full rounded-4xl overflow-hidden cursor-pointer text-left border-2 border-sky-300/60 hover:border-sky-300 p-0 transition-all duration-700 hover:scale-[1.04] hover:rotate-[0.5deg]"
       onClick={onClick}
       aria-label={`View detailed weather for ${cityname}`}
     >
-      <div className="p-6 relative">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent card click when removing
-            onRemove();
-          }}
-          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white border-0 z-10"
-          aria-label={`Remove ${cityname} from dashboard`}
-        >
-          <X className="h-4 w-4" />
-        </Button>
+      {/* Animated mesh gradient overlay */}
+      <div className="absolute inset-0 m-0.5 rounded-4xl pointer-events-none z-0 bg-linear-to-tr from-blue-500/50 via-transparent to-purple-500/60" />
 
-        <h2 className="text-2xl font-bold mb-2">{cityname}</h2>
-        <p className="text-white/90 mb-4">{description}</p>
-        <div className="text-5xl font-bold">{temperature}°C</div>
+      {/* Content */}
+      <div className="relative z-10 p-8">
+        {/* City name with subtle glow */}
+        <h2 className="text-3xl font-bold mb-3 text-white tracking-tight drop-shadow-lg">
+          {cityname}
+        </h2>
+
+        {/* Description */}
+        <p className="text-white/90 mb-6 text-base font-medium backdrop-blur-sm inline-block px-3 py-1 rounded-full bg-white/10 border border-white/20">
+          {description}
+        </p>
+
+        {/* Temperature with dramatic styling */}
+        <div className="flex items-baseline gap-3 mb-6">
+          <div className="text-6xl font-black text-white tracking-tighter drop-shadow-2xl">
+            {temperature}°
+          </div>
+          <div className="text-3xl font-light text-white/80 mb-4">C</div>
+        </div>
       </div>
     </button>
-  );
-});
-
-WeatherCard.displayName = 'WeatherCard';
+  )
+);
 
 export default WeatherCard;
