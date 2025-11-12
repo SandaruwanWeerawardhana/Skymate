@@ -9,7 +9,9 @@ interface WeatherCardProps {
   onRemove: () => void;
 }
 
-const WeatherCard: React.FC<WeatherCardProps> = ({
+// React.memo: Memoizes the component - only re-renders when props change
+// This prevents unnecessary re-renders when parent state updates
+const WeatherCard: React.FC<WeatherCardProps> = React.memo(({
   cityname,
   description,
   temperature,
@@ -31,6 +33,8 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
       </div>
     </div>
   );
-};
+});
+
+WeatherCard.displayName = 'WeatherCard';
 
 export default WeatherCard;

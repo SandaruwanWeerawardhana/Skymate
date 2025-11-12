@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import WeatherCard from '../components/WeatherCard';
 import SearchBar from '../components/SearchBar';
 import { Cloud } from 'lucide-react';
@@ -26,20 +26,24 @@ export const WeatherDashboard: React.FC = () => {
     load();
   }, []);
 
-  const handleAddCity = async (cityName: string) => {
+  // useCallback memoizes the function - prevents creating new function on every render
+  // This is important for React.memo components (WeatherCard won't re-render unnecessarily)
+  const handleAddCity = useCallback(async (cityName: string) => {
     if (!cityName.trim()) return;
     try {
       const item = await fetchWeatherByName(cityName);
       setCards((prev) => [...prev, item]);
+      setError(null);
     } catch (e) {
       console.error(e);
       setError('Could not find that city');
     }
-  };
+  }, []);
 
-  const handleRemoveCity = (id: string) => {
+  // useCallback with empty deps - function never changes between renders
+  const handleRemoveCity = useCallback((id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
-  };
+  }, []);
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">

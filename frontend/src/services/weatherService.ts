@@ -1,5 +1,6 @@
 import axios from "axios";
 import citiesData from "../data/cities.json";
+import { getCache, setCache } from "../utils/cache";
 
 const OPENWEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
 
@@ -16,24 +17,35 @@ export type CardWeather = {
 
 function ensureApiKey() {
   if (!API_KEY) {
-    throw new Error(
-      "Missing .env file"
-    );
+    throw new Error("Missing .env file");
   }
 }
 
-export const fetchWeatherById = async (cityId: string): Promise<CardWeather> => {
+export const fetchWeatherById = async (
+  cityId: string
+): Promise<CardWeather> => {
   ensureApiKey();
+
+  const cacheKey = `weather:id:${cityId}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
     const { data } = await axios.get(OPENWEATHER_URL, {
       params: { id: cityId, appid: API_KEY, units: "metric" },
     });
-    return {
+    const weatherData: CardWeather = {
       id: String(cityId),
       cityname: data?.name ?? String(cityId),
       description: data?.weather?.[0]?.description ?? "",
       temperature: data?.main?.temp ?? 0,
     };
+
+    setCache(cacheKey, weatherData);
+
+    return weatherData;
   } catch (err) {
     console.log(`Exception while fetching weather by id ${cityId}: ${err}`);
     throw err;
@@ -44,16 +56,27 @@ export const fetchWeatherByName = async (
   name: string
 ): Promise<CardWeather> => {
   ensureApiKey();
+
+  const cacheKey = `weather:name:${name.toLowerCase()}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
     const { data } = await axios.get(OPENWEATHER_URL, {
       params: { q: name, appid: API_KEY, units: "metric" },
     });
-    return {
+    const weatherData: CardWeather = {
       id: String(data?.id ?? name),
       cityname: data?.name ?? name,
       description: data?.weather?.[0]?.description ?? "",
       temperature: data?.main?.temp ?? 0,
     };
+
+    setCache(cacheKey, weatherData);
+
+    return weatherData;
   } catch (err) {
     console.log(`Exception while fetching weather by name ${name}: ${err}`);
     throw err;
