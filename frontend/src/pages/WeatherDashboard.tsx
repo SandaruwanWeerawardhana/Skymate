@@ -1,15 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import WeatherCard from '../components/WeatherCard';
+import WeatherCardView from '../components/WeatherCardView';
 import SearchBar from '../components/SearchBar';
-import { Cloud } from 'lucide-react';
-import type { CardWeather } from '@/services/weatherService';
-import { fetchAllWeatherFromCities, fetchWeatherByName } from '@/services/weatherService';
+import { Cloud, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { CardWeather, DetailedWeather } from '@/services/weatherService';
+import { fetchAllWeatherFromCities, fetchWeatherByName, fetchDetailedWeatherById } from '@/services/weatherService';
 type CardItem = CardWeather;
 
 export const WeatherDashboard: React.FC = () => {
   const [cards, setCards] = useState<CardItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<DetailedWeather | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
 
   useEffect(() => {
     const load = async () => {
@@ -44,6 +48,66 @@ export const WeatherDashboard: React.FC = () => {
   const handleRemoveCity = useCallback((id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
   }, []);
+
+  // Handle card click to show detailed view
+  const handleCardClick = useCallback(async (cityId: string) => {
+    setLoadingDetail(true);
+    try {
+      const detailedWeather = await fetchDetailedWeatherById(cityId);
+      setSelectedCity(detailedWeather);
+    } catch (e) {
+      console.error('Failed to load detailed weather:', e);
+      setError('Failed to load weather details');
+    } finally {
+      setLoadingDetail(false);
+    }
+  }, []);
+
+  // Handle back button
+  const handleBack = useCallback(() => {
+    setSelectedCity(null);
+  }, []);
+
+  // If detailed view is selected, show WeatherCardView
+  if (selectedCity) {
+    return (
+      <div className="min-h-screen gradient-bg relative overflow-hidden">
+        <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+          <Button
+            onClick={handleBack}
+            className="mb-6 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
+
+          {loadingDetail ? (
+            <p className="text-center text-foreground">Loading details...</p>
+          ) : (
+            <WeatherCardView
+              city={selectedCity.city}
+              date={selectedCity.date}
+              temperature={selectedCity.temperature}
+              tempMin={selectedCity.tempMin}
+              tempMax={selectedCity.tempMax}
+              condition={selectedCity.condition}
+              pressure={selectedCity.pressure}
+              humidity={selectedCity.humidity}
+              visibility={selectedCity.visibility}
+              windSpeed={selectedCity.windSpeed}
+              windDegree={selectedCity.windDegree}
+              sunrise={selectedCity.sunrise}
+              sunset={selectedCity.sunset}
+              onRemove={() => {
+                handleRemoveCity(selectedCity.id);
+                handleBack();
+              }}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
@@ -83,6 +147,7 @@ export const WeatherDashboard: React.FC = () => {
                 description={c.description}
                 temperature={c.temperature}
                 onRemove={() => handleRemoveCity(c.id)}
+                onClick={() => handleCardClick(c.id)}
               />
             ))}
           </div>

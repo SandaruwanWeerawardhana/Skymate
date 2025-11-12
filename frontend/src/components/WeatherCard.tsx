@@ -7,6 +7,7 @@ interface WeatherCardProps {
   description: string;
   temperature: number;
   onRemove: () => void;
+  onClick?: () => void;
 }
 
 // React.memo: Memoizes the component - only re-renders when props change
@@ -16,13 +17,23 @@ const WeatherCard: React.FC<WeatherCardProps> = React.memo(({
   description,
   temperature,
   onRemove,
+  onClick,
 }) => {
   return (
-    <div className="rounded-xl overflow-hidden card-shadow smooth-transition hover:card-shadow-hover hover:scale-[1.02] bg-[hsl(217_20%_24%)] text-white">
+    <button
+      type="button"
+      className="w-full rounded-xl overflow-hidden card-shadow smooth-transition hover:card-shadow-hover hover:scale-[1.02] bg-[hsl(217_20%_24%)] text-white cursor-pointer text-left border-0 p-0"
+      onClick={onClick}
+      aria-label={`View detailed weather for ${cityname}`}
+    >
       <div className="p-6 relative">
         <Button
-          onClick={onRemove}
-          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white border-0"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click when removing
+            onRemove();
+          }}
+          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white border-0 z-10"
+          aria-label={`Remove ${cityname} from dashboard`}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -31,7 +42,7 @@ const WeatherCard: React.FC<WeatherCardProps> = React.memo(({
         <p className="text-white/90 mb-4">{description}</p>
         <div className="text-5xl font-bold">{temperature}°C</div>
       </div>
-    </div>
+    </button>
   );
 });
 
