@@ -15,6 +15,23 @@ export type CardWeather = {
   temperature: number;
 };
 
+export type DetailedWeather = {
+  id: string;
+  city: string;
+  date: string;
+  temperature: number;
+  tempMin: number;
+  tempMax: number;
+  condition: string;
+  pressure: string;
+  humidity: string;
+  visibility: string;
+  windSpeed: string;
+  windDegree: string;
+  sunrise: string;
+  sunset: string;
+};
+
 function ensureApiKey() {
   if (!API_KEY) {
     throw new Error("Missing .env file");
@@ -103,4 +120,57 @@ export const fetchAllWeatherFromCities = async (): Promise<CardWeather[]> => {
     })
   );
   return results;
+};
+
+// Fetch detailed weather data for WeatherCardView
+export const fetchDetailedWeatherById = async (
+  cityId: string
+): Promise<DetailedWeather> => {
+  ensureApiKey();
+
+  const cacheKey = `weather:detailed:${cityId}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const { data } = await axios.get(OPENWEATHER_URL, {
+      params: { id: cityId, appid: API_KEY, units: "metric" },
+    });
+
+    const formatTime = (timestamp: number) => {
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const weatherData: DetailedWeather = {
+      id: String(cityId),
+      city: data?.name ?? String(cityId),
+      date: new Date().toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      temperature: Math.round(data?.main?.temp ?? 0),
+      tempMin: Math.round(data?.main?.temp_min ?? 0),
+      tempMax: Math.round(data?.main?.temp_max ?? 0),
+      condition: data?.weather?.[0]?.main ?? 'Clear Sky',
+      pressure: `${data?.main?.pressure ?? 0} hPa`,
+      humidity: `${data?.main?.humidity ?? 0}%`,
+      visibility: `${((data?.visibility ?? 0) / 1000).toFixed(1)} km`,
+      windSpeed: `${data?.wind?.speed ?? 0} m/s`,
+      windDegree: `${data?.wind?.deg ?? 0}°`,
+      sunrise: formatTime(data?.sys?.sunrise ?? 0),
+      sunset: formatTime(data?.sys?.sunset ?? 0),
+    };
+
+    setCache(cacheKey, weatherData);
+
+    return weatherData;
+  } catch (err) {
+    console.log(`Exception while fetching detailed weather by id ${cityId}: ${err}`);
+    throw err;
+  }
 };
