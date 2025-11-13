@@ -1,12 +1,7 @@
 import WeatherDashboard from "./pages/WeatherDashboard";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
-  return (
-    <ProtectedRoute>
-      <WeatherDashboard />
-    </ProtectedRoute>
-  );
+  return <WeatherDashboard />;
 }
 
 export default App;

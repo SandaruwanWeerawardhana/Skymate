@@ -1,9 +1,39 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 import { Lock } from "lucide-react";
-import LoginButton from "@/components/auth/LoginButton";
+import LoginForm from "@/components/LoginForm";
+import RegisterForm from "@/components/RegisterForm";
 
 export default function AuthPages() {
-  const { isLoading } = useAuth0();
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      console.log("Login submitted:", { email, password });
+      // TODO: Implement actual login logic
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
+    setIsLoading(true);
+    try {
+      console.log("Register submitted:", { name, email, password });
+      // TODO: Implement actual registration logic
+    } catch (error) {
+      console.error("Register error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
@@ -18,21 +48,29 @@ export default function AuthPages() {
               <Lock className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Welcome to Weather App
+              {isLogin ? "Welcome Back" : "Create Account"}
             </h1>
             <p className="text-white/60 text-sm">
-              Sign in with Auth0 to access real-time weather data
+              {isLogin
+                ? "Sign in to continue to your account"
+                : "Sign up to get started"}
             </p>
           </div>
 
-          {/* Auth0 Login */}
-          <LoginButton />
-          
-          <div className="text-center mt-6">
-            <p className="text-white/60 text-xs">
-              Secure authentication powered by Auth0
-            </p>
-          </div>
+          {/* Form */}
+          {isLogin ? (
+            <LoginForm
+              onSubmit={handleLogin}
+              onToggleForm={() => setIsLogin(false)}
+              isLoading={isLoading}
+            />
+          ) : (
+            <RegisterForm
+              onSubmit={handleRegister}
+              onToggleForm={() => setIsLogin(true)}
+              isLoading={isLoading}
+            />
+          )}
         </div>
       </div>
     </div>
