@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import WeatherCard from '../components/WeatherCard';
 import WeatherCardView from './WeatherCardView';
 import SearchBar from '../components/SearchBar';
-import { Cloud, ArrowLeft } from 'lucide-react';
+import LogoutButton from '../components/auth/LogoutButton';
+import { Cloud, ArrowLeft, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CardWeather, DetailedWeather } from '@/services/weatherService';
 import { fetchAllWeatherFromCities, fetchWeatherByName, fetchDetailedWeatherById } from '@/services/weatherService';
 type CardItem = CardWeather;
 
 export const WeatherDashboard: React.FC = () => {
+  const { user } = useAuth0();
   const [cards, setCards] = useState<CardItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,13 +76,15 @@ export const WeatherDashboard: React.FC = () => {
     return (
       <div className="min-h-screen gradient-bg relative overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
-          <Button
-            onClick={handleBack}
-            className="mb-6 flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
+          <div className="flex justify-between items-center mb-6">
+            <Button
+              onClick={handleBack}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+          </div>
 
           {loadingDetail ? (
             <p className="text-center text-foreground">Loading details...</p>
@@ -124,6 +129,17 @@ export const WeatherDashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        {/* User Info & Logout */}
+        <div className="flex justify-end items-center gap-4 mb-6">
+          {user && (
+            <div className="flex items-center gap-2 text-white">
+              <User className="w-5 h-5" />
+              <span className="text-sm">{user.name || user.email}</span>
+            </div>
+          )}
+          <LogoutButton />
+        </div>
+
         {/* Header */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-8">
