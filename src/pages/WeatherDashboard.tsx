@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import WeatherCard from '../components/WeatherCard';
 import WeatherCardView from './WeatherCardView';
 import SearchBar from '../components/SearchBar';
-import { Cloud, ArrowLeft } from 'lucide-react';
+import { Cloud, ArrowLeft, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CardWeather, DetailedWeather } from '@/services/weatherService';
 import { fetchAllWeatherFromCities, fetchWeatherByName, fetchDetailedWeatherById } from '@/services/weatherService';
 type CardItem = CardWeather;
 
 export const WeatherDashboard: React.FC = () => {
+  const { user, logout } = useAuth0();
   const [cards, setCards] = useState<CardItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,6 +126,37 @@ export const WeatherDashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        {/* User Profile Bar */}
+        <div className="flex justify-end items-center gap-4 mb-6">
+          {user && (
+            <div className="flex items-center gap-3 backdrop-blur-xl bg-white/10 rounded-2xl border border-white/20 px-4 py-2 shadow-lg">
+              {user.picture ? (
+                <img
+                  src={user.picture}
+                  alt={user.name || 'User'}
+                  className="w-8 h-8 rounded-full border-2 border-purple-400"
+                />
+              ) : (
+                <User className="w-6 h-6 text-white/80" />
+              )}
+              <span className="text-white/90 font-medium">{user.name || user.email}</span>
+            </div>
+          )}
+          <Button
+            onClick={() =>
+              logout({
+                logoutParams: {
+                  returnTo: globalThis.location.origin,
+                },
+              })
+            }
+            className="flex items-center gap-2 bg-red-500/80 hover:bg-red-600 text-white"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
+
         {/* Header */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-8">
@@ -155,7 +188,7 @@ export const WeatherDashboard: React.FC = () => {
 
         {/* Footer */}
         <footer className="text-center text-muted-foreground text-sm pb-8">
-          <p>2021 Fidenz Technologies</p>
+          <p>2025 Fidenz Technologies</p>
         </footer>
       </div>
     </div>
