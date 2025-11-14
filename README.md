@@ -1,4 +1,4 @@
-# Skymate - Weather Application
+<h1 align=center> Skymate - Weather Application</h1>h1>
 
 A modern weather application built with React, TypeScript, and Vite. The app displays real-time weather data for multiple cities using the OpenWeatherMap API with intelligent caching to minimize API calls.
 
