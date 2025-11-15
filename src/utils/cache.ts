@@ -1,40 +1,41 @@
-
-const CACHE_DURATION = 5 * 60 * 1000; 
-
+const CACHE_DURATION = 1 * 60 * 1000; 
 
 export const setCache = (key: string, data: any) => {
   try {
-    localStorage.setItem(key, JSON.stringify({ data, time: Date.now() }));
-    console.log(`✅ Cache SAVED: ${key}`);
+    const timestamp = Date.now();
+    localStorage.setItem(key, JSON.stringify({ data, time: timestamp }));
+    console.log(`CACHE SAVED`, key);
+    console.log(`   Timestamp: ${new Date(timestamp).toLocaleTimeString()}`);
   } catch (error) {
-    console.error('Failed to save cache:', error);
+    console.error("Failed to save cache:", error);
   }
 };
-
 
 export const getCache = (key: string) => {
   try {
     const cached = localStorage.getItem(key);
     if (!cached) {
-      console.log(`❌ Cache MISS: ${key} (not found)`);
+      console.log(`CACHE MISS`, key);
       return null;
     }
 
     const { data, time } = JSON.parse(cached);
     const age = Date.now() - time;
-    
+    const ageSeconds = (age / 1000).toFixed(1);
+    const remainingSeconds = ((CACHE_DURATION - age) / 1000).toFixed(1);
+
     if (age < CACHE_DURATION) {
-      const ageMinutes = (age / 60000).toFixed(2);
-      console.log(`✅ Cache HIT: ${key} (age: ${ageMinutes} min)`);
+      console.log(`CACHE HIT`, key);
+      console.log(`   Age: ${ageSeconds}s | Remaining: ${remainingSeconds}s`);
       return data;
     }
 
-    const ageMinutes = (age / 60000).toFixed(2);
-    console.log(`⏰ Cache EXPIRED: ${key} (age: ${ageMinutes} min)`);
-    localStorage.removeItem(key); 
+    console.log(`CACHE EXPIRED`, key);
+    console.log(`   Age: ${ageSeconds}s (expired ${(age - CACHE_DURATION) / 1000}s ago)`);
+    localStorage.removeItem(key);
     return null;
   } catch (error) {
-    console.error('Failed to get cache:', error);
+    console.error("Failed to get cache:", error);
     return null;
   }
 };

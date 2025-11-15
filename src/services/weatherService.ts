@@ -64,7 +64,7 @@ export const fetchWeatherById = async (
 
     return weatherData;
   } catch (err) {
-    console.log(`Exception while fetching weather by id ${cityId}: ${err}`);
+    console.log(`fetching weather by id : ${err}`);
     throw err;
   }
 };
@@ -106,10 +106,8 @@ export const fetchAllWeatherFromCities = async (): Promise<CardWeather[]> => {
     list.map(async (c) => {
       try {
         return await fetchWeatherById(c.CityCode);
-      } catch (e) {
-        console.log(
-          `Exception while fetching weather for ${c.CityName} (${c.CityCode}): ${e}`
-        );
+      } catch (err) {
+        console.log(`Exception while fetching weather for ${err}`);
         return {
           id: c.CityCode,
           cityname: c.CityName,
@@ -122,7 +120,6 @@ export const fetchAllWeatherFromCities = async (): Promise<CardWeather[]> => {
   return results;
 };
 
-// Fetch detailed weather data for WeatherCardView
 export const fetchDetailedWeatherById = async (
   cityId: string
 ): Promise<DetailedWeather> => {
@@ -141,22 +138,25 @@ export const fetchDetailedWeatherById = async (
 
     const formatTime = (timestamp: number) => {
       const date = new Date(timestamp * 1000);
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     };
 
     const weatherData: DetailedWeather = {
       id: String(cityId),
       city: data?.name ?? String(cityId),
-      date: new Date().toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      date: new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       }),
       temperature: Math.round(data?.main?.temp ?? 0),
       tempMin: Math.round(data?.main?.temp_min ?? 0),
       tempMax: Math.round(data?.main?.temp_max ?? 0),
-      condition: data?.weather?.[0]?.main ?? 'Clear Sky',
+      condition: data?.weather?.[0]?.main ?? "Clear Sky",
       pressure: `${data?.main?.pressure ?? 0} hPa`,
       humidity: `${data?.main?.humidity ?? 0}%`,
       visibility: `${((data?.visibility ?? 0) / 1000).toFixed(1)} km`,
@@ -170,7 +170,9 @@ export const fetchDetailedWeatherById = async (
 
     return weatherData;
   } catch (err) {
-    console.log(`Exception while fetching detailed weather by id ${cityId}: ${err}`);
+    console.log(
+      `Exception while fetching detailed weather by id ${cityId}: ${err}`
+    );
     throw err;
   }
 };

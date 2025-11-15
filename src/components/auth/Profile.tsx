@@ -19,7 +19,7 @@ export const Profile: React.FC = () => {
   return (
     <div className="backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 p-6 shadow-xl">
       <div className="flex flex-col items-center gap-6">
-        {/* Profile Picture */}
+        
         {user.picture && (
           <div className="relative">
             <img
@@ -31,7 +31,6 @@ export const Profile: React.FC = () => {
           </div>
         )}
 
-        {/* User Info */}
         <div className="w-full space-y-4">
           {user.name && (
             <div className="flex items-center gap-3 text-white/90">
