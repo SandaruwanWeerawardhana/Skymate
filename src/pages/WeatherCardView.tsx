@@ -44,15 +44,12 @@ export const WeatherCardView: React.FC<WeatherCardViewProps> = React.memo(
     windDegree,
     sunrise,
     sunset,
-
   }) => {
     const WeatherIcon = weatherIcons[condition] || Cloud;
 
     return (
       <div className="rounded-2xl overflow-hidden card-shadow smooth-transition hover:card-shadow-hover hover:scale-[1.04] max-w-5xl mx-auto">
-        {/* Top Section - Colored */}
         <div className={`bg-blue-800 p-10 relative overflow-hidden min-h-80`}>
-          {/* Content */}
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-8">
             <div>
               <h2 className="text-4xl font-bold text-white mb-2">{city}</h2>
@@ -83,7 +80,6 @@ export const WeatherCardView: React.FC<WeatherCardViewProps> = React.memo(
           </div>
         </div>
 
-        {/* Bottom Section - Dark */}
         <div className="bg-[hsl(217_20%_24%)] p-7 px-7">
           <div className="grid grid-cols-4 gap-8">
             <div>
