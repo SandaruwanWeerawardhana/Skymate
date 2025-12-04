@@ -31,7 +31,7 @@ export const getCache = (key: string) => {
     }
 
     console.log(`CACHE EXPIRED`, key);
-    console.log(`   Age: ${ageSeconds}s (expired ${(age - CACHE_DURATION) / 1000}s ago)`);
+    console.log(`Age: ${ageSeconds}s (expired ${(age - CACHE_DURATION) / 1000}s ago)`);
     localStorage.removeItem(key);
     return null;
   } catch (error) {

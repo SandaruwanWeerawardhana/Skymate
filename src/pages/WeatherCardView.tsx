@@ -1,16 +1,6 @@
 import React from "react";
-import { Cloud, CloudRain, Sun, Wind, CloudFog } from "lucide-react";
+import { Cloud, Wind } from "lucide-react";
 
-const weatherIcons: Record<string, React.ElementType> = {
-  "Few Clouds": Cloud,
-  "Broken Clouds": Cloud,
-  "Clear Sky": Sun,
-  Clear: Sun,
-  "Light Rain": CloudRain,
-  Rain: CloudRain,
-  Mist: CloudFog,
-  Clouds: Cloud,
-};
 
 interface WeatherCardViewProps {
   city: string;
@@ -26,7 +16,6 @@ interface WeatherCardViewProps {
   windDegree: string;
   sunrise: string;
   sunset: string;
-  onRemove: () => void;
 }
 
 export const WeatherCardView: React.FC<WeatherCardViewProps> = React.memo(
@@ -45,7 +34,7 @@ export const WeatherCardView: React.FC<WeatherCardViewProps> = React.memo(
     sunrise,
     sunset,
   }) => {
-    const WeatherIcon = weatherIcons[condition] || Cloud;
+    const WeatherIcon = Cloud;
 
     return (
       <div className="rounded-2xl overflow-hidden card-shadow smooth-transition hover:card-shadow-hover hover:scale-[1.04] max-w-5xl mx-auto">

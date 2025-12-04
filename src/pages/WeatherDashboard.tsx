@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import type { CardWeather, DetailedWeather } from "@/services/weatherService";
 import {
   fetchAllWeatherFromCities,
-  fetchWeatherByName,
   fetchDetailedWeatherById,
 } from "@/services/weatherService";
 type CardItem = CardWeather;
@@ -38,21 +37,6 @@ export const WeatherDashboard: React.FC = () => {
     load();
   }, []);
 
-  const handleAddCity = useCallback(async (cityName: string) => {
-    if (!cityName.trim()) return;
-    try {
-      const item = await fetchWeatherByName(cityName);
-      setCards((prev) => [...prev, item]);
-      setError(null);
-    } catch (e) {
-      console.error(e);
-      setError("Could not find that city");
-    }
-  }, []);
-
-  const handleRemoveCity = useCallback((id: string) => {
-    setCards((prev) => prev.filter((c) => c.id !== id));
-  }, []);
 
   const handleCardClick = useCallback(async (cityId: string) => {
     setLoadingDetail(true);
@@ -71,11 +55,6 @@ export const WeatherDashboard: React.FC = () => {
     setSelectedCity(null);
   }, []);
 
-  const handleRemove = () => {
-    if (!selectedCity) return;
-    handleRemoveCity(selectedCity.id);
-    handleBack();
-  };
 
   if (selectedCity) {
     return (
@@ -103,7 +82,7 @@ export const WeatherDashboard: React.FC = () => {
               windDegree={selectedCity.windDegree}
               sunrise={selectedCity.sunrise}
               sunset={selectedCity.sunset}
-              onRemove={() => handleRemove()}
+        
             />
           )}
         </div>
@@ -113,7 +92,6 @@ export const WeatherDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
-      {/* Background Clouds */}
       <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none">
         <div className="absolute bottom-0 left-0 w-full h-full">
           <svg
@@ -140,9 +118,7 @@ export const WeatherDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
-        {/* User Profile Bar */}
         <div className="flex justify-end items-center gap-4 mb-6">
           {user && (
             <div className="flex items-center gap-3 backdrop-blur-xl bg-white/10 rounded-2xl border border-white/20 px-4 py-2 shadow-lg">
@@ -175,18 +151,15 @@ export const WeatherDashboard: React.FC = () => {
           </Button>
         </div>
 
-        {/* Header */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-8">
             <Cloud className="w-10 h-10 text-foreground" strokeWidth={1.5} />
             <h1 className="text-4xl font-bold text-foreground">Weather App</h1>
           </div>
 
-          {/* Search Bar */}
-          <SearchBar onAddCity={handleAddCity} />
+          <SearchBar />
         </header>
 
-        {/* Weather Cards Grid */}
         {loading && <p className="text-center text-foreground">Loading...</p>}
         {!loading && error && (
           <p className="text-center text-red-400">{error}</p>
@@ -199,14 +172,12 @@ export const WeatherDashboard: React.FC = () => {
                 cityname={c.cityname}
                 description={c.description}
                 temperature={c.temperature}
-                onRemove={() => handleRemoveCity(c.id)}
                 onClick={() => handleCardClick(c.id)}
               />
             ))}
           </div>
         )}
 
-        {/* Footer */}
         <footer className="text-center text-muted-foreground text-sm pb-8">
           <p>2025 Fidenz Technologies</p>
         </footer>
