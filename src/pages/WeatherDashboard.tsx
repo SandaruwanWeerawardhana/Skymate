@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import type { CardWeather, DetailedWeather } from "@/services/weatherService";
 import {
   fetchAllWeatherFromCities,
+  fetchWeatherByName,
+
   fetchDetailedWeatherById,
 } from "@/services/weatherService";
 type CardItem = CardWeather;
@@ -37,6 +39,22 @@ export const WeatherDashboard: React.FC = () => {
     load();
   }, []);
 
+  const handleAddCity = useCallback(async (cityName: string) => {
+    if (!cityName.trim()) return;
+    try {
+      const item = await fetchWeatherByName(cityName);
+      setCards((prev) => [...prev, item]);
+      setError(null);
+    } catch (e) {
+      console.error(e);
+      setError("Could not find that city");
+    }
+  }, []);
+
+  const handleRemoveCity = useCallback((id: string) => {
+    setCards((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
 
   const handleCardClick = useCallback(async (cityId: string) => {
     setLoadingDetail(true);
@@ -54,6 +72,13 @@ export const WeatherDashboard: React.FC = () => {
   const handleBack = useCallback(() => {
     setSelectedCity(null);
   }, []);
+
+
+  const handleRemove = () => {
+    if (!selectedCity) return;
+    handleRemoveCity(selectedCity.id);
+    handleBack();
+  };
 
 
   if (selectedCity) {
@@ -82,7 +107,9 @@ export const WeatherDashboard: React.FC = () => {
               windDegree={selectedCity.windDegree}
               sunrise={selectedCity.sunrise}
               sunset={selectedCity.sunset}
-        
+              
+              onRemove={() => handleRemove()}
+
             />
           )}
         </div>
