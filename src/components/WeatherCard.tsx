@@ -4,7 +4,6 @@ interface WeatherCardProps {
   cityname: string;
   description: string;
   temperature: number;
-  onRemove: () => void;
   onClick?: () => void;
 }
 

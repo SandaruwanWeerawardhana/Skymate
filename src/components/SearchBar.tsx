@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
-interface SearchBarProps {
-  onAddCity: (cityName: string) => void;
-}
 
 export const SearchBar: React.FC<SearchBarProps> = ({ onAddCity }) => {
   const [cityName, setCityName] = useState<string>("");
@@ -12,7 +9,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onAddCity }) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (cityName.trim()) {
-      onAddCity(cityName);
       setCityName("");
     }
   };
