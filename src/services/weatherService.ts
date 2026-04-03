@@ -69,6 +69,37 @@ export const fetchWeatherById = async (
   }
 };
 
+export const fetchWeatherByName = async (
+  name: string
+): Promise<CardWeather> => {
+  ensureApiKey();
+
+  const cacheKey = `weather:name:${name.toLowerCase()}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const { data } = await axios.get(OPENWEATHER_URL, {
+      params: { q: name, appid: API_KEY, units: "metric" },
+    });
+    const weatherData: CardWeather = {
+      id: String(data?.id ?? name),
+      cityname: data?.name ?? name,
+      description: data?.weather?.[0]?.description ?? "",
+      temperature: data?.main?.temp ?? 0,
+    };
+
+    setCache(cacheKey, weatherData);
+
+    return weatherData;
+  } catch (err) {
+    console.log(`Exception while fetching weather by name ${name}: ${err}`);
+    throw err;
+  }
+};
+
 export const fetchAllWeatherFromCities = async (): Promise<CardWeather[]> => {
   const list = (citiesData as { List: CityItem[] }).List || [];
   const results = await Promise.all(

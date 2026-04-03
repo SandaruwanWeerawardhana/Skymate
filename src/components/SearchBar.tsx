@@ -3,7 +3,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 
-export const SearchBar: React.FC = () => {
+export const SearchBar: React.FC<SearchBarProps> = ({ onAddCity }) => {
   const [cityName, setCityName] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
